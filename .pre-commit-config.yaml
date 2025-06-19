@@ -13,6 +13,14 @@ repos:
       - id: debug-statements
       - id: detect-private-key
 
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.20.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
+      - id: commitizen-branch
+        stages: [pre-push]
+
   # Ruff version.
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: "v0.6.2"
@@ -72,7 +80,7 @@ repos:
 
   # zizmor detects security issues in GitHub Actions workflows.
   - repo: https://github.com/woodruffw/zizmor-pre-commit
-    rev: v1.6.0
+    rev: v1.9.0
     hooks:
       - id: zizmor
         args: ["--min-severity", "medium", "--min-confidence", "high"]

@@ -46,6 +46,7 @@ core = [
     "matplotlib>=3.4.3",
     "opencv-python>=4.5.3.56",
     "pandas>=1.1.0",
+    "pillow>=10.1.0",
     "scikit-image",  # NOTE: skimage should be removed as part of dependency cleanup
     "tifffile",
     "timm",
@@ -89,6 +90,7 @@ test = [
     "pytest-json-report",
     "coverage[toml]",
     "tox",
+    "commitizen",
 ]
 full = ["anomalib[core,openvino,loggers,notebooks, vlm]"]
 dev = ["anomalib[full,docs,test]"]
@@ -281,10 +283,8 @@ follow_imports_for_stubs = true
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # BANDIT CONFIGURATION                                                        #
-# TODO(AlexanderBarabanov): B614 temporary suppression, enable B614 checks
-# ITEP-36249
 [tool.bandit]
-skips = ["B101", "B614"]
+skips = ["B101"]
 exclude_dirs = ["tests"]
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -332,3 +332,66 @@ exclude_links = [
 ]
 exclude_files = ["docs/*"]
 force_get_requests_for_links = ["https://secure.ethicspoint.com/*"]
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# COMMITIZEN CONFIGURATION                                                    #
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "v$version"
+version_scheme = "semver"
+version_provider = "pep621"
+update_changelog_on_bump = true
+changelog_file = "CHANGELOG.md"
+changelog_format = "## $version ($date)"
+major_version_zero = true
+types = [
+    "feat",
+    "fix",
+    "docs",
+    "style",
+    "refactor",
+    "perf",
+    "test",
+    "build",
+    "ci",
+    "chore",
+]
+scopes = [
+    "data",
+    "model",
+    "metric",
+    "utils",
+    "cli",
+    "docs",
+    "ci",
+    "engine",
+    "visualization",
+    "benchmarking",
+    "logger",
+    "openvino",
+    "notebooks"
+]
+
+# Conventional commit rules
+[tool.commitizen.rules]
+scope-enum = [2, "always", [
+    "data",
+    "model",
+    "metric",
+    "utils",
+    "cli",
+    "docs",
+    "ci",
+    "engine",
+    "visualization",
+    "benchmarking",
+    "logger",
+    "openvino",
+    "notebooks"
+]]
+scope-empty = [0]
+subject-case = [2, "never", ["sentence-case", "start-case", "pascal-case", "upper-case"]]
+subject-empty = [2, "never"]
+subject-full-stop = [2, "never", "."]
+type-case = [2, "always", "lower-case"]
+type-empty = [2, "never"]

@@ -44,19 +44,30 @@ on:
   merge_group:
     branches: [main]
 
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # Commit message validation - runs first as it's quick and fundamental
+  commit-message-check:
+    uses: ./.github/workflows/_reusable-commit-message-check.yaml
+    with:
+      python-version: "3.10"
+
   # Code quality job using reusable workflow
   quality:
+    needs: [commit-message-check] # Run after commit validation
     uses: ./.github/workflows/_reusable-code-quality.yaml
     with:
       python-version: "3.10"
 
   # Test suite job using reusable workflow
   unit-tests:
+    needs: [commit-message-check] # Run after commit validation
     uses: ./.github/workflows/_reusable-test-suite.yaml
     with:
       test-type: "unit"
@@ -67,6 +78,7 @@ jobs:
       codecov-token: ${{ secrets.CODECOV_TOKEN }}
 
   integration-tests:
+    needs: [commit-message-check] # Run after commit validation
     uses: ./.github/workflows/_reusable-test-suite.yaml
     with:
       test-type: "integration"
@@ -80,8 +92,11 @@ jobs:
 
   # Security scanning job using reusable workflow
   security:
-    needs: [] # No dependencies, can run in parallel
+    needs: [commit-message-check] # Run after commit validation
     uses: ./.github/workflows/_reusable-security-scan.yaml
+    permissions:
+      security-events: write # needed to upload results
+      contents: read
     with:
       tools: "semgrep,bandit,zizmor" # Security tools to run
       scan-scope: "changed" # Only scan changed files
